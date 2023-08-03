@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#Configure Nginx so that its HTTP response contains a custom header
+
+sudo apt-get update nginx
+sudo apt-get install -y nginx
+
+echo "Holberton School" | sudo tee /var/www/html/index.html
+
+#redirection
+string="server_name _;\n\trewrite ^\/redirect_me https:\/\/udemy.com\/ permanent;"
+
+sudo sed -i "s/server_name _;/$string/" /etc/nginx/sites-enabled/default
+
+#error page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+
+#HTTP response header
+sudo sed -i "server_name _;/a add_header X-Served-By HOSTNAME;" /etc/nginx/sites-enabled/default
+
+#test for errors
+sudo nginx -t
+
+#restarting
+sudo service nginx restart
